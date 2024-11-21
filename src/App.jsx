@@ -1,13 +1,13 @@
-import AiMemeGenerator from "./components/AiMemeGenerator";
-import MemeGenerator from "./components/MemeGenerator";
+import MemeGeneratorWithAi from "./components/MemeGeneratorWithAi";
 
 function App() {
   return (
     <>
-      <AiMemeGenerator />
+      {/* <AiMemeGenerator />
       <div style={{ marginTop: "100px" }}>
         <MemeGenerator />
-      </div>
+      </div> */}
+      <MemeGeneratorWithAi />
     </>
   );
 }

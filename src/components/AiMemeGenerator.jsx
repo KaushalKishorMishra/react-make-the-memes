@@ -1,11 +1,14 @@
 import { useState } from "react";
 import axios from "axios";
+import { useImageStore } from "../hooks/store/useImageStore";
 
 const AiMemeGenerator = () => {
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState(null);
   const [downloadUrl, setDownloadUrl] = useState(null);
+
+  const { setImage } = useImageStore();
 
   const handlePromptChange = (event) => {
     setPrompt(event.target.value);
@@ -50,6 +53,7 @@ const AiMemeGenerator = () => {
         });
         const imageUrl = URL.createObjectURL(imageBlob);
         setImageUrl(imageUrl);
+        setImage(imageBlob, imageUrl);
         setDownloadUrl(imageUrl); // Set download URL
       } else {
         throw new Error(`${response.status}: ${response.statusText}`);
@@ -86,12 +90,16 @@ const AiMemeGenerator = () => {
               style={{ display: "flex", flexDirection: "column", gap: "2rem" }}
             >
               <button type="submit">Generate Meme</button>
-              <a href={downloadUrl} download={"meme.jpeg"} style={{
-                width:"100%",
-                display:"flex",
-                justifyContent:"center",
-                padding:"1rem",
-              }}>
+              <a
+                href={downloadUrl}
+                download={"meme.jpeg"}
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                  padding: "1rem",
+                }}
+              >
                 Download Meme
               </a>
             </div>

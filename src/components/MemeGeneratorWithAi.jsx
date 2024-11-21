@@ -1,24 +1,18 @@
 import { useState, useRef, useEffect } from "react";
+import axios from "axios";
 import { useImageStore } from "../hooks/store/useImageStore";
 
-const MemeGenerator = () => {
+const MemeGeneratorWithAi = () => {
   const canvasRef = useRef(null);
   const [topText, setTopText] = useState("When the code works");
   const [bottomText, setBottomText] = useState("But you don't know why");
   const [fontSize, setFontSize] = useState(40);
   const [textColor, setTextColor] = useState("#FFFFFF");
+  const [prompt, setPrompt] = useState("");
+  const [loading, setLoading] = useState(false);
   const [currentImage, setCurrentImage] = useState(null);
 
-  const { getImage } = useImageStore();
-
-  useEffect(() => {
-    const defaultImage = new Image();
-    defaultImage.src =
-      "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=500&q=80";
-    defaultImage.onload = () => {
-      setCurrentImage(defaultImage);
-    };
-  }, []);
+  const { getImage, setImage } = useImageStore();
 
   useEffect(() => {
     if (currentImage) drawMeme();
@@ -30,20 +24,62 @@ const MemeGenerator = () => {
     const file = event.target.files[0];
     if (imageBlob && imageUrl) {
       const img = new Image();
-      img.onload = () => {
-        setCurrentImage(img);
-      };
+      img.onload = () => setCurrentImage(img);
       img.src = imageBlob;
     } else if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
         const img = new Image();
-        img.onload = () => {
-          setCurrentImage(img);
-        };
+        img.onload = () => setCurrentImage(img);
         img.src = e.target.result;
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleAiGenerate = async (event) => {
+    event.preventDefault();
+
+    const apiKey = import.meta.env.VITE_API_KEY; // Replace with your API key
+    const payload = {
+      prompt: prompt,
+      output_format: "jpeg",
+    };
+
+    setLoading(true);
+    setCurrentImage(null);
+
+    try {
+      const formData = new FormData();
+      for (const key in payload) formData.append(key, payload[key]);
+
+      const response = await axios.post(
+        "https://api.stability.ai/v2beta/stable-image/generate/sd3",
+        formData,
+        {
+          responseType: "arraybuffer",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            Accept: "image/*",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        const imageBlob = new Blob([response.data], { type: "image/jpeg" });
+        const imageUrl = URL.createObjectURL(imageBlob);
+        const img = new Image();
+        img.onload = () => setCurrentImage(img);
+        img.src = imageUrl;
+        setImage(imageBlob, imageUrl);
+      } else {
+        throw new Error(`${response.status}: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error("Error generating image:", error);
+      alert("Failed to generate image.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -136,6 +172,23 @@ const MemeGenerator = () => {
             <small>or drag and drop</small>
           </div>
 
+          <form onSubmit={handleAiGenerate}>
+            <div className="text-input">
+              <label htmlFor="prompt">Enter AI Meme Prompt:</label>
+              <textarea
+                id="prompt"
+                name="prompt"
+                rows="3"
+                placeholder="Describe your meme..."
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+              />
+            </div>
+            <button type="submit" disabled={loading}>
+              {loading ? "Generating..." : "Generate AI Image"}
+            </button>
+          </form>
+
           <div className="text-input">
             <label htmlFor="topText">Top Text</label>
             <textarea
@@ -166,7 +219,7 @@ const MemeGenerator = () => {
               min="20"
               max="100"
               value={fontSize}
-              onChange={(e) => setFontSize(e.target.value)}
+              onChange={(e) => setFontSize(Number(e.target.value))}
             />
           </div>
 
@@ -181,6 +234,7 @@ const MemeGenerator = () => {
           </div>
 
           <button onClick={generateJoke}>Generate AI Joke</button>
+
           <button onClick={downloadMeme}>Download Meme</button>
         </div>
 
@@ -193,4 +247,5 @@ const MemeGenerator = () => {
     </div>
   );
 };
-export default MemeGenerator;
+
+export default MemeGeneratorWithAi;
