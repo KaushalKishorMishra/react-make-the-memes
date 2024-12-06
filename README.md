@@ -1,6 +1,6 @@
 Here's the updated `README.md` with the Stability-AI API key link added:
 
-```markdown
+
 # React Project with Yarn and Stability-AI Integration
 
 This project is built with React using the Yarn package manager. It integrates Stability-AI API for AI-based functionalities. Follow the instructions below to set up and run the project.
@@ -42,7 +42,6 @@ Replace `/* YOUR API KEY HERE */` with your Stability-AI API key. You can obtain
 yarn dev
 ```
 
----
 
 ## **Scripts**
 
