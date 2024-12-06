@@ -16,8 +16,8 @@ This project is built with React using the Yarn package manager. It integrates S
 
 ### 1. Clone the Repository
 ```bash
-git clone <repository-url>
-cd <project-directory>
+git clone https://github.com/KaushalKishorMishra/react-make-the-memes.git
+cd react-make-the-memes
 ```
 
 ### 2. Install Dependencies
