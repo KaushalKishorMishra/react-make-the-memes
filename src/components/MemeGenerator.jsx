@@ -115,7 +115,7 @@ const MemeGenerator = () => {
   return (
     <div className="container">
       <header>
-        <h1>Make The Memes 😆</h1>
+        <h1>MemeIt 😆</h1>
         <p className="subtitle">Transform your images into memes!</p>
       </header>
 

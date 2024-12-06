@@ -69,7 +69,7 @@ const AiMemeGenerator = () => {
   return (
     <div className="container">
       <header>
-        <h1>Make The Memes 😆 with AI</h1>
+        <h1>MemeIt 😆 with AI</h1>
         <p className="subtitle">Transform your imagination into memes!</p>
       </header>
       <main>
